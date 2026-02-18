@@ -84,14 +84,39 @@ if ($("#saveDraft")) {
 }
 
 if ($("#leadForm")) {
-  $("#leadForm").addEventListener("submit", (e) => {
+  $("#leadForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.target).entries());
-    console.log("제출 데이터:", data);
-    closeForm();
-    showToast("제출 완료! (데모: 콘솔에 저장됨)");
-    e.target.reset();
-    localStorage.removeItem("innercircleLeadDraft");
+    const form = e.target;
+    const data = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = "보내는 중...";
+
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        body: data,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        closeForm();
+        showToast("문의가 성공적으로 접수되었습니다!");
+        form.reset();
+        localStorage.removeItem("innercircleLeadDraft");
+      } else {
+        const result = await response.json();
+        showToast(result.errors ? result.errors.map(error => error.message).join(", ") : "오류가 발생했습니다.");
+      }
+    } catch (error) {
+      showToast("서버와 통신 중 오류가 발생했습니다.");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "제출";
+    }
   });
 }
 
