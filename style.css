@@ -66,6 +66,44 @@ a {
   padding: 22px;
 }
 
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.quick-actions .btn {
+  flex: 1;
+  justify-content: center;
+  padding: 16px;
+  font-size: 15px;
+  border-radius: 16px;
+  border: none;
+}
+
+.quick-actions .kakao {
+  background: #FEE500 !important;
+  color: #1a1c20 !important;
+}
+
+.quick-actions .info {
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.quick-actions .apply {
+  background: var(--accent) !important;
+  color: #06080b !important;
+}
+
+@media (max-width: 768px) {
+  .quick-actions {
+    flex-direction: column;
+  }
+}
+
 /* Header */
 header {
   position: sticky;
