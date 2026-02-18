@@ -84,11 +84,24 @@ if ($("#saveDraft")) {
 }
 
 if ($("#leadForm")) {
-  $("#leadForm").addEventListener("submit", async (e) => {
+  const leadForm = $("#leadForm");
+  const msgInput = $("#msg");
+  const submitBtn = $("#submitBtn");
+
+  const validateForm = () => {
+    if (msgInput.value.trim().length > 0) {
+      submitBtn.disabled = false;
+    } else {
+      submitBtn.disabled = true;
+    }
+  };
+
+  msgInput.addEventListener("input", validateForm);
+
+  leadForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const form = e.target;
     const data = new FormData(form);
-    const submitBtn = form.querySelector('button[type="submit"]');
     
     submitBtn.disabled = true;
     submitBtn.textContent = "보내는 중...";
@@ -106,6 +119,7 @@ if ($("#leadForm")) {
         closeForm();
         showToast("문의가 성공적으로 접수되었습니다!");
         form.reset();
+        validateForm(); // Reset button state
         localStorage.removeItem("innercircleLeadDraft");
       } else {
         const result = await response.json();
@@ -116,6 +130,7 @@ if ($("#leadForm")) {
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "제출";
+      validateForm(); // Re-validate in case of error
     }
   });
 }
@@ -140,6 +155,12 @@ if ($("#leadForm")) {
     for (const [k, v] of Object.entries(data)) {
       const el = document.querySelector(`[name="${k}"]`);
       if (el) el.value = v;
+    }
+    // Check initial validity if draft exists
+    if ($("#msg")) {
+      if ($("#msg").value.trim().length > 0) {
+        if ($("#submitBtn")) $("#submitBtn").disabled = false;
+      }
     }
   } catch { }
 })();
